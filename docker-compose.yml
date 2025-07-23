@@ -100,7 +100,6 @@ services:
     networks:
       - boutique-net
 
-
 networks:
   boutique-net:
     driver: bridge
