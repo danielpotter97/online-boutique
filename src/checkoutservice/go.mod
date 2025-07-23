@@ -3,7 +3,7 @@ module github.com/GoogleCloudPlatform/microservices-demo/src/checkoutservice
 go 1.23.0
 
 require (
-	cloud.google.com/go/profiler v0.4.2
+	github.com/microsoft/ApplicationInsights-Go v0.4.4
 	github.com/google/uuid v1.6.0
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.3

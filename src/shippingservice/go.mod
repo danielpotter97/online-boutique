@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.24.3
 
 require (
-	cloud.google.com/go/profiler v0.4.2
+	github.com/microsoft/ApplicationInsights-Go v0.4.4
 	github.com/sirupsen/logrus v1.9.3
 	golang.org/x/net v0.38.0
 	google.golang.org/grpc v1.71.0
