@@ -36,7 +36,8 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 
-import googlecloudprofiler
+from applicationinsights import TelemetryClient
+from applicationinsights.logging import LoggingHandler
 
 from logger import getJSONLogger
 logger = getJSONLogger('emailservice-server')
@@ -135,29 +136,42 @@ def start(dummy_mode):
   except KeyboardInterrupt:
     server.stop(0)
 
-def initStackdriverProfiling():
-  project_id = None
+def initAzureApplicationInsights():
+  instrumentation_key = None
+  connection_string = None
+  
   try:
-    project_id = os.environ["GCP_PROJECT_ID"]
+    connection_string = os.environ["APPLICATIONINSIGHTS_CONNECTION_STRING"]
   except KeyError:
-    # Environment variable not set
-    pass
+    try:
+      instrumentation_key = os.environ["APPINSIGHTS_INSTRUMENTATIONKEY"]
+    except KeyError:
+      # Neither environment variable is set
+      logger.info("Azure Application Insights not configured")
+      return
 
   for retry in range(1,4):
     try:
-      if project_id:
-        googlecloudprofiler.start(service='email_server', service_version='1.0.0', verbose=0, project_id=project_id)
-      else:
-        googlecloudprofiler.start(service='email_server', service_version='1.0.0', verbose=0)
-      logger.info("Successfully started Stackdriver Profiler.")
+      if connection_string:
+        # Configure Application Insights with connection string
+        tc = TelemetryClient(connection_string)
+        logger.info("Successfully initialized Azure Application Insights with connection string.")
+      elif instrumentation_key:
+        # Configure Application Insights with instrumentation key
+        tc = TelemetryClient(instrumentation_key)
+        logger.info("Successfully initialized Azure Application Insights with instrumentation key.")
+      
+      # Set up logging handler
+      handler = LoggingHandler(connection_string or instrumentation_key)
+      logger.addHandler(handler)
       return
     except (BaseException) as exc:
-      logger.info("Unable to start Stackdriver Profiler Python agent. " + str(exc))
+      logger.info("Unable to start Azure Application Insights agent. " + str(exc))
       if (retry < 4):
-        logger.info("Sleeping %d to retry initializing Stackdriver Profiler"%(retry*10))
+        logger.info("Sleeping %d seconds to retry Azure Application Insights agent initialization"%(retry*10))
         time.sleep (1)
       else:
-        logger.warning("Could not initialize Stackdriver Profiler after retrying, giving up")
+        logger.warning("Could not initialize Azure Application Insights after retrying, giving up")
   return
 
 
@@ -170,7 +184,7 @@ if __name__ == '__main__':
       raise KeyError()
     else:
       logger.info("Profiler enabled.")
-      initStackdriverProfiling()
+      initAzureApplicationInsights()
   except KeyError:
       logger.info("Profiler disabled.")
 

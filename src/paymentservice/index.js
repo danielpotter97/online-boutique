@@ -23,12 +23,18 @@ if(process.env.DISABLE_PROFILER) {
 }
 else {
   logger.info("Profiler enabled.")
-  require('@google-cloud/profiler').start({
-    serviceContext: {
-      service: 'paymentservice',
-      version: '1.0.0'
-    }
-  });
+  const appInsights = require('applicationinsights');
+  if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
+    appInsights.setup(process.env.APPLICATIONINSIGHTS_CONNECTION_STRING)
+      .setAutoDependencyCorrelation(true)
+      .setAutoCollectRequests(true)
+      .setAutoCollectPerformance(true, true)
+      .setAutoCollectExceptions(true)
+      .setAutoCollectDependencies(true)
+      .setAutoCollectConsole(true)
+      .setSendLiveMetrics(true)
+      .start();
+  }
 }
 
 

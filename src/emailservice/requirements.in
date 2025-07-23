@@ -1,5 +1,6 @@
+opencensus-ext-azure==1.1.13
+applicationinsights==0.11.10
 grpcio-health-checking==1.73.1
-grpcio==1.73.1
 jinja2==3.1.6
 python-json-logger==3.3.0
 requests==2.32.4

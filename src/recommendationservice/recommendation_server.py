@@ -20,8 +20,8 @@ import time
 import traceback
 from concurrent import futures
 
-import googlecloudprofiler
-from google.auth.exceptions import DefaultCredentialsError
+from applicationinsights import TelemetryClient
+from applicationinsights.logging import LoggingHandler
 import grpc
 
 import demo_pb2
@@ -38,29 +38,42 @@ from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExport
 from logger import getJSONLogger
 logger = getJSONLogger('recommendationservice-server')
 
-def initStackdriverProfiling():
-  project_id = None
+def initAzureApplicationInsights():
+  instrumentation_key = None
+  connection_string = None
+  
   try:
-    project_id = os.environ["GCP_PROJECT_ID"]
+    connection_string = os.environ["APPLICATIONINSIGHTS_CONNECTION_STRING"]
   except KeyError:
-    # Environment variable not set
-    pass
+    try:
+      instrumentation_key = os.environ["APPINSIGHTS_INSTRUMENTATIONKEY"]
+    except KeyError:
+      # Neither environment variable is set
+      logger.info("Azure Application Insights not configured")
+      return
 
   for retry in range(1,4):
     try:
-      if project_id:
-        googlecloudprofiler.start(service='recommendation_server', service_version='1.0.0', verbose=0, project_id=project_id)
-      else:
-        googlecloudprofiler.start(service='recommendation_server', service_version='1.0.0', verbose=0)
-      logger.info("Successfully started Stackdriver Profiler.")
+      if connection_string:
+        # Configure Application Insights with connection string
+        tc = TelemetryClient(connection_string)
+        logger.info("Successfully initialized Azure Application Insights with connection string.")
+      elif instrumentation_key:
+        # Configure Application Insights with instrumentation key
+        tc = TelemetryClient(instrumentation_key)
+        logger.info("Successfully initialized Azure Application Insights with instrumentation key.")
+      
+      # Set up logging handler
+      handler = LoggingHandler(connection_string or instrumentation_key)
+      logger.addHandler(handler)
       return
     except (BaseException) as exc:
-      logger.info("Unable to start Stackdriver Profiler Python agent. " + str(exc))
+      logger.info("Unable to start Azure Application Insights agent. " + str(exc))
       if (retry < 4):
-        logger.info("Sleeping %d seconds to retry Stackdriver Profiler agent initialization"%(retry*10))
+        logger.info("Sleeping %d seconds to retry Azure Application Insights agent initialization"%(retry*10))
         time.sleep (1)
       else:
-        logger.warning("Could not initialize Stackdriver Profiler after retrying, giving up")
+        logger.warning("Could not initialize Azure Application Insights after retrying, giving up")
   return
 
 class RecommendationService(demo_pb2_grpc.RecommendationServiceServicer):
@@ -99,7 +112,7 @@ if __name__ == "__main__":
         raise KeyError()
       else:
         logger.info("Profiler enabled.")
-        initStackdriverProfiling()
+        initAzureApplicationInsights()
     except KeyError:
         logger.info("Profiler disabled.")
 
@@ -119,10 +132,10 @@ if __name__ == "__main__":
             )
           )
         )
-    except (KeyError, DefaultCredentialsError):
+    except KeyError:
         logger.info("Tracing disabled.")
     except Exception as e:
-        logger.warn(f"Exception on Cloud Trace setup: {traceback.format_exc()}, tracing disabled.") 
+        logger.warn(f"Exception on tracing setup: {traceback.format_exc()}, tracing disabled.") 
 
     port = os.environ.get('PORT', "8080")
     catalog_addr = os.environ.get('PRODUCT_CATALOG_SERVICE_ADDR', '')

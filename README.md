@@ -1,4 +1,9 @@
-<!-- <p align="center">
+<!-- **Online Boutique** is a cloud-first microservices demo application.  The application is a
+web-based e-commerce app where users can browse items, add them to the cart, and purchase them.
+
+This application demonstrates how developers can modernize enterprise applications using cloud-native technologies including: [Azure Kubernetes Service (AKS)](https://azure.microsoft.com/en-us/services/kubernetes-service/), [Azure Application Insights](https://azure.microsoft.com/en-us/services/monitor/), [gRPC](https://grpc.io/), [Azure Cache for Redis](https://azure.microsoft.com/en-us/services/cache/), and [Azure Container Registry](https://azure.microsoft.com/en-us/services/container-registry/). This application works on any Kubernetes cluster and has been migrated to use Azure native services.
+
+If you're using this demo, please **★Star** this repository to show your interest!="center">
 <img src="/src/frontend/static/icons/Hipster_HeroLogoMaroon.svg" width="300" alt="Online Boutique" />
 </p> -->
 ![Continuous Integration](https://github.com/GoogleCloudPlatform/microservices-demo/workflows/Continuous%20Integration%20-%20Main/Release/badge.svg)
@@ -42,7 +47,33 @@ Find **Protocol Buffers Descriptions** at the [`./protos` directory](/protos).
 | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | [![Screenshot of store homepage](/docs/img/online-boutique-frontend-1.png)](/docs/img/online-boutique-frontend-1.png) | [![Screenshot of checkout screen](/docs/img/online-boutique-frontend-2.png)](/docs/img/online-boutique-frontend-2.png) |
 
-## Quickstart (GKE)
+## Quickstart (Azure AKS)
+
+1. Ensure you have the following requirements:
+   - [Azure subscription](https://azure.microsoft.com/en-us/free/).
+   - Shell environment with `az`, `git`, and `kubectl`.
+
+2. Clone this repository:
+   ```sh
+   git clone https://github.com/danielpotter97/online-boutique.git
+   cd online-boutique/
+   ```
+
+3. Follow the [Azure Deployment Guide](./AZURE-DEPLOYMENT.md) for detailed deployment instructions.
+
+4. For quick local development:
+   ```sh
+   # Copy environment template and update with your Azure details
+   cp .env.example .env
+   # Edit .env with your Azure Application Insights connection string
+   
+   # Run locally with Docker Compose
+   docker compose up --build
+   ```
+
+5. Navigate to `http://localhost:8080` to access the web frontend.
+
+## Quickstart (Original GKE)
 
 1. Ensure you have the following requirements:
    - [Google Cloud project](https://cloud.google.com/resource-manager/docs/creating-managing-projects#creating_a_project).

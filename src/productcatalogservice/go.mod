@@ -6,7 +6,7 @@ toolchain go1.24.1
 
 require (
 	cloud.google.com/go/alloydbconn v1.15.0
-	cloud.google.com/go/profiler v0.4.2
+	github.com/microsoft/ApplicationInsights-Go v0.4.4
 	cloud.google.com/go/secretmanager v1.14.6
 	github.com/golang/protobuf v1.5.4
 	github.com/jackc/pgx/v5 v5.7.4
