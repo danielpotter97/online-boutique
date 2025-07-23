@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  redis:
+    image: "redis:7"
+    container_name: boutique-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - boutique-net
+
+  frontend:
+    build: ./src/frontend
+    container_name: boutique-frontend
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      # Add any service URLs or env vars needed by the frontend
+    networks:
+      - boutique-net
+    depends_on:
+      - cartservice
+      - productcatalogservice
+      - currencyservice
+      - recommendationservice
+      - shippingservice
+      - paymentservice
+      - adservice
+      - emailservice
+      - shoppingassistantservice
+
+  adservice:
+    build: ./src/adservice
+    container_name: boutique-adservice
+    networks:
+      - boutique-net
+
+  cartservice:
+    build: ./src/cartservice/src
+    container_name: boutique-cartservice
+    environment:
+      - REDIS_ADDR=redis:6379
+    networks:
+      - boutique-net
+    depends_on:
+      - redis
+
+  checkoutservice:
+    build: ./src/checkoutservice
+    container_name: boutique-checkoutservice
+    networks:
+      - boutique-net
+
+  currencyservice:
+    build: ./src/currencyservice
+    container_name: boutique-currencyservice
+    networks:
+      - boutique-net
+
+  emailservice:
+    build: ./src/emailservice
+    container_name: boutique-emailservice
+    networks:
+      - boutique-net
+
+  loadgenerator:
+    build: ./src/loadgenerator
+    container_name: boutique-loadgenerator
+    networks:
+      - boutique-net
+
+  paymentservice:
+    build: ./src/paymentservice
+    container_name: boutique-paymentservice
+    networks:
+      - boutique-net
+
+  productcatalogservice:
+    build: ./src/productcatalogservice
+    container_name: boutique-productcatalogservice
+    networks:
+      - boutique-net
+
+  recommendationservice:
+    build: ./src/recommendationservice
+    container_name: boutique-recommendationservice
+    networks:
+      - boutique-net
+
+  shippingservice:
+    build: ./src/shippingservice
+    container_name: boutique-shippingservice
+    networks:
+      - boutique-net
+
+  shoppingassistantservice:
+    build: ./src/shoppingassistantservice
+    container_name: boutique-shoppingassistantservice
+    networks:
+      - boutique-net
+
+
+networks:
+  boutique-net:
+    driver: bridge
