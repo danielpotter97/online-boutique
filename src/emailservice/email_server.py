@@ -36,9 +36,6 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 
-from applicationinsights import TelemetryClient
-from applicationinsights.logging import LoggingHandler
-
 from logger import getJSONLogger
 logger = getJSONLogger('emailservice-server')
 

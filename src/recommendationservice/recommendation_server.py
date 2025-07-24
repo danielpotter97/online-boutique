@@ -20,8 +20,6 @@ import time
 import traceback
 from concurrent import futures
 
-from applicationinsights import TelemetryClient
-from applicationinsights.logging import LoggingHandler
 import grpc
 
 import demo_pb2

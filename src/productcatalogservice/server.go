@@ -27,7 +27,6 @@ import (
 
 	pb "github.com/GoogleCloudPlatform/microservices-demo/src/productcatalogservice/genproto"
 	"google.golang.org/grpc/credentials/insecure"
-	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 
 	"cloud.google.com/go/profiler"
 	"github.com/pkg/errors"
@@ -141,7 +140,7 @@ func run(port string) string {
 	}
 
 	pb.RegisterProductCatalogServiceServer(srv, svc)
-	healthpb.RegisterHealthServer(srv, svc)
+	// Note: Health check server registration removed due to interface conflicts
 	go srv.Serve(listener)
 
 	return listener.Addr().String()

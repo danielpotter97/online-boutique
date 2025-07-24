@@ -34,7 +34,7 @@ else {
   if (process.env.JAEGER_ENDPOINT || process.env.OTEL_EXPORTER_JAEGER_ENDPOINT) {
     const { NodeSDK } = require('@opentelemetry/sdk-node');
     const { JaegerExporter } = require('@opentelemetry/exporter-jaeger');
-    const { Resource } = require('@opentelemetry/resources');
+    const { resourceFromAttributes } = require('@opentelemetry/resources');
     const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
     
     const jaegerExporter = new JaegerExporter({
@@ -42,7 +42,7 @@ else {
     });
     
     const sdk = new NodeSDK({
-      resource: new Resource({
+      resource: resourceFromAttributes({
         [SemanticResourceAttributes.SERVICE_NAME]: 'currencyservice',
         [SemanticResourceAttributes.SERVICE_VERSION]: '1.0.0',
       }),
@@ -68,11 +68,11 @@ if(process.env.ENABLE_TRACING == "1") {
   const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
   const { SimpleSpanProcessor } = require('@opentelemetry/sdk-trace-base');
   const { OTLPTraceExporter } = require("@opentelemetry/exporter-otlp-grpc");
-  const { Resource } = require('@opentelemetry/resources');
+  const { resourceFromAttributes } = require('@opentelemetry/resources');
   const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
 
   const provider = new NodeTracerProvider({
-    resource: new Resource({
+    resource: resourceFromAttributes({
       [SemanticResourceAttributes.SERVICE_NAME]: process.env.OTEL_SERVICE_NAME || 'currencyservice',
     }),
   });
