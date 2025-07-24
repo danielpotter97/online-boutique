@@ -58,11 +58,10 @@ spec:
           type: {{ .Values.seccompProfile.type }}
         {{- end }}
       {{- end }}
-      {{- if eq .Values.opentelemetryCollector.projectId "PROJECT_ID" }}
+      {{- if eq .Values.opentelemetryCollector.projectId "YOUR_PROJECT_ID" }}
       initContainers:
-      # Init container retrieves the current cloud project id from the metadata server
-      # and inserts it into the collector config template
-      # https://cloud.google.com/compute/docs/storing-retrieving-metadata
+      # Init container sets up platform-independent project identifier
+      # Replace with your platform-specific initialization if needed
       - name: otel-gateway-init
         securityContext:
           allowPrivilegeEscalation: false
@@ -76,7 +75,8 @@ spec:
         - '/bin/sh'
         - '-c'
         - |
-           sed "s/PROJECT_ID/$(curl -H 'Metadata-Flavor: Google' http://metadata.google.internal/computeMetadata/v1/project/project-id)/" /template/collector-gateway-config-template.yaml >> /conf/collector-gateway-config.yaml
+           # Platform-independent project ID setup
+           sed "s/YOUR_PROJECT_ID/{{ .Values.opentelemetryCollector.projectId }}/" /template/collector-gateway-config-template.yaml >> /conf/collector-gateway-config.yaml
         volumeMounts:
         - name: collector-gateway-config-template
           mountPath: /template
@@ -85,7 +85,7 @@ spec:
       {{- end }}
       containers:
       # This gateway container will receive traces and metrics from each microservice
-      # and forward it to GCP
+      # and forward them to your observability backend (Jaeger, Prometheus, etc.)
       - name: otel-gateway
         securityContext:
           allowPrivilegeEscalation: false
@@ -142,18 +142,24 @@ data:
           grpc:
     processors:
     exporters:
-      googlecloud:
-        project: {{ .Values.opentelemetryCollector.projectId | quote }}
+      # Platform-independent observability backend
+      # Configure with your preferred observability platform (Jaeger, Prometheus, etc.)
+      jaeger:
+        endpoint: jaeger-collector:14250
+        tls:
+          insecure: true
+      prometheus:
+        endpoint: "0.0.0.0:8889"
     service:
       pipelines:
         traces:
           receivers: [otlp] # Receive otlp-formatted data from other collector instances
           processors: []
-          exporters: [googlecloud] # Export traces directly to Google Cloud
+          exporters: [jaeger] # Export traces to Jaeger (platform-independent)
         metrics:
           receivers: [otlp]
           processors: []
-          exporters: [googlecloud] # Export metrics to Google Cloud
+          exporters: [prometheus] # Export metrics to Prometheus (platform-independent)
 {{- if .Values.networkPolicies.create }}
 ---
 apiVersion: networking.k8s.io/v1

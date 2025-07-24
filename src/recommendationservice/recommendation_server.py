@@ -113,14 +113,11 @@ class RecommendationService(demo_pb2_grpc.RecommendationServiceServicer):
 if __name__ == "__main__":
     logger.info("initializing recommendationservice")
 
-    try:
-      if "DISABLE_PROFILER" in os.environ:
-        raise KeyError()
-      else:
-        logger.info("Profiler enabled.")
-        initJaegerTracing()
-    except KeyError:
-        logger.info("Profiler disabled.")
+    # Platform-independent profiling
+    if "DISABLE_PROFILER" not in os.environ:
+        logger.info("Platform-independent profiling disabled by default.")
+    else:
+        logger.info("Profiling disabled.")
 
     try:
       grpc_client_instrumentor = GrpcInstrumentorClient()

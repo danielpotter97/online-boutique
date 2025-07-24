@@ -28,7 +28,6 @@ import (
 	pb "github.com/GoogleCloudPlatform/microservices-demo/src/productcatalogservice/genproto"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"cloud.google.com/go/profiler"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
@@ -74,8 +73,7 @@ func main() {
 	}
 
 	if os.Getenv("DISABLE_PROFILER") == "" {
-		log.Info("Profiling enabled.")
-		go initProfiling("productcatalogservice", "1.0.0")
+		log.Info("Platform-independent profiling disabled by default.")
 	} else {
 		log.Info("Profiling disabled.")
 	}
@@ -134,10 +132,12 @@ func run(port string) string {
 		grpc.StreamInterceptor(otelgrpc.StreamServerInterceptor()))
 
 	svc := &productCatalog{}
-	err = loadCatalog(&svc.catalog)
+	ctx := context.Background()
+	products, err := loadCatalog(ctx)
 	if err != nil {
 		log.Fatalf("could not parse product catalog: %v", err)
 	}
+	svc.catalog.Products = products
 
 	pb.RegisterProductCatalogServiceServer(srv, svc)
 	// Note: Health check server registration removed due to interface conflicts
@@ -172,26 +172,6 @@ func initTracing() error {
 		sdktrace.WithSampler(sdktrace.AlwaysSample()))
 	otel.SetTracerProvider(tp)
 	return err
-}
-
-func initProfiling(service, version string) {
-	for i := 1; i <= 3; i++ {
-		if err := profiler.Start(profiler.Config{
-			Service:        service,
-			ServiceVersion: version,
-			// ProjectID must be set if not running on GCP.
-			// ProjectID: "my-project",
-		}); err != nil {
-			log.Warnf("failed to start profiler: %+v", err)
-		} else {
-			log.Info("started Stackdriver profiler")
-			return
-		}
-		d := time.Second * 10 * time.Duration(i)
-		log.Infof("sleeping %v to retry initializing Stackdriver profiler", d)
-		time.Sleep(d)
-	}
-	log.Warn("could not initialize Stackdriver profiler after retrying, giving up")
 }
 
 func mustMapEnv(target *string, envKey string) {

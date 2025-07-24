@@ -28,9 +28,9 @@ resources:
  - shippingservice.yaml
 # components:
 # - ../kustomize/components/cymbal-branding
-# - ../kustomize/components/google-cloud-operations
-# - ../kustomize/components/memorystore
 # - ../kustomize/components/network-policies
+# Platform-independent: Cloud-specific components are not needed
+# - ../kustomize/components/memorystore
 # - ../kustomize/components/alloydb
 # - ../kustomize/components/shopping-assistant
 # - ../kustomize/components/spanner

@@ -26,32 +26,10 @@ const logger = pino({
 });
 
 if(process.env.DISABLE_PROFILER) {
-  logger.info("Profiler disabled.")
+  logger.info("Profiling disabled.")
 }
 else {
-  logger.info("Profiler enabled.")
-  // Configure OpenTelemetry with Jaeger tracing
-  if (process.env.JAEGER_ENDPOINT || process.env.OTEL_EXPORTER_JAEGER_ENDPOINT) {
-    const { NodeSDK } = require('@opentelemetry/sdk-node');
-    const { JaegerExporter } = require('@opentelemetry/exporter-jaeger');
-    const { resourceFromAttributes } = require('@opentelemetry/resources');
-    const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
-    
-    const jaegerExporter = new JaegerExporter({
-      endpoint: process.env.JAEGER_ENDPOINT || process.env.OTEL_EXPORTER_JAEGER_ENDPOINT,
-    });
-    
-    const sdk = new NodeSDK({
-      resource: resourceFromAttributes({
-        [SemanticResourceAttributes.SERVICE_NAME]: 'currencyservice',
-        [SemanticResourceAttributes.SERVICE_VERSION]: '1.0.0',
-      }),
-      traceExporter: jaegerExporter,
-    });
-    
-    sdk.start();
-    logger.info('OpenTelemetry with Jaeger tracing initialized successfully');
-  }
+  logger.info("Platform-independent profiling disabled by default.")
 }
 
 // Register GRPC OTel Instrumentation for trace propagation

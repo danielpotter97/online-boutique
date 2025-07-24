@@ -205,8 +205,8 @@ services:
   #   container_name: boutique-shoppingassistantservice
   #   environment:
   #     - PORT=8080
-  #     - PROJECT_ID=your-gcp-project-id
-  #     - REGION=your-gcp-region
+  #     - PROJECT_ID=your-project-id
+  #     - REGION=your-region
   #     - ALLOYDB_DATABASE_NAME=your-alloydb-name
   #     - ALLOYDB_TABLE_NAME=your-table-name
   #     - ALLOYDB_CLUSTER_NAME=your-cluster-name

@@ -116,11 +116,11 @@ spec:
           - name: OTEL_SERVICE_NAME
             value: "{{ .Values.frontend.name }}"
           {{- end }}
-          {{- if .Values.googleCloudOperations.tracing }}
+          {{- if .Values.observability.tracing }}
           - name: ENABLE_TRACING
             value: "1"
           {{- end }}
-          {{- if .Values.googleCloudOperations.profiler }}
+          {{- if .Values.observability.profiler }}
           - name: ENABLE_PROFILER
             value: "1"
           {{- end }}

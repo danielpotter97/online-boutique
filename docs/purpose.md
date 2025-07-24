@@ -2,12 +2,12 @@
 
 Today, the primary purpose of Online Boutique is to demonstrate:
 
-* [Google Kubernetes Engine (GKE)](https://cloud.google.com/kubernetes-engine)
-* [Anthos](https://cloud.google.com/anthos)
-* [Google Cloud Operations](https://cloud.google.com/products/operations)
-* tools and technologies commonly used alongside the above products
+* **Platform-Independent Microservices Architecture** - Deployable across multiple cloud providers and on-premises environments
+* **Modern Observability** - OpenTelemetry-based distributed tracing with Jaeger
+* **Container Orchestration** - Kubernetes-native deployment patterns
+* Technologies and best practices for cloud-agnostic microservices development
 
-while being accessible and useful to all new Kubernetes users.
+while being accessible and useful to all Kubernetes users regardless of their cloud provider choice.
 
 ### Why does the purpose matter?
 

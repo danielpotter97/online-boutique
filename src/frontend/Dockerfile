@@ -17,10 +17,15 @@ ARG TARGETOS
 ARG TARGETARCH
 WORKDIR /src
 
+# Install git for go mod download
+RUN apk add --no-cache git
+
 # restore dependencies
-COPY go.mod go.sum ./
+COPY go.mod ./
+ENV GOPROXY=https://goproxy.io,direct
 RUN go mod download
 COPY . .
+RUN go mod tidy
 
 # Skaffold passes in debug-oriented compiler flags
 ARG SKAFFOLD_GO_GCFLAGS

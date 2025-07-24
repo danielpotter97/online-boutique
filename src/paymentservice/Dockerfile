@@ -14,7 +14,7 @@
 
 FROM node:20.18.1-alpine AS builder
 
-# Some packages (e.g. @google-cloud/profiler) require additional
+# Some packages require additional dependencies for compilation
 # deps for post-install scripts
 RUN apk add --update --no-cache \
     python3 \

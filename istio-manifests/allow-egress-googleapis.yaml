@@ -12,35 +12,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: networking.istio.io/v1alpha3
-kind: ServiceEntry
-metadata:
-  name: allow-egress-googleapis
-spec:
-  hosts:
-  - "accounts.google.com" # Used to get token
-  - "*.googleapis.com"
-  ports:
-  - number: 80
-    protocol: HTTP
-    name: http
-  - number: 443
-    protocol: HTTPS
-    name: https
----
-apiVersion: networking.istio.io/v1alpha3
-kind: ServiceEntry
-metadata:
-  name: allow-egress-google-metadata
-spec:
-  hosts:
-  - metadata.google.internal
-  addresses:
-  - 169.254.169.254 # GCE metadata server
-  ports:
-  - number: 80
-    name: http
-    protocol: HTTP
-  - number: 443
-    name: https
-    protocol: HTTPS
+# NOTE: This file was originally for GCP-specific Google APIs access.
+# Since this application is now platform-independent, these service entries
+# are no longer needed for the core functionality.
+# 
+# If you need to restore GCP-specific functionality, uncomment the following:
+#
+# apiVersion: networking.istio.io/v1alpha3
+# kind: ServiceEntry
+# metadata:
+#   name: allow-egress-googleapis
+# spec:
+#   hosts:
+#   - "accounts.google.com" # Used to get token
+#   - "*.googleapis.com"
+#   ports:
+#   - number: 80
+#     protocol: HTTP
+#     name: http
+#   - number: 443
+#     protocol: HTTPS
+#     name: https
+# ---
+# apiVersion: networking.istio.io/v1alpha3
+# kind: ServiceEntry
+# metadata:
+#   name: allow-egress-google-metadata
+# spec:
+#   hosts:
+#   - metadata.google.internal
+#   addresses:
+#   - 169.254.169.254 # GCE metadata server
+#   ports:
+#   - number: 80
+#     name: http
+#     protocol: HTTP
+#   - number: 443
+#     name: https
+#     protocol: HTTPS

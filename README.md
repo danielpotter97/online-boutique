@@ -8,16 +8,17 @@ If you're using this demo, please **★Star** this repository to show your inter
 </p> -->
 ![Continuous Integration](https://github.com/GoogleCloudPlatform/microservices-demo/workflows/Continuous%20Integration%20-%20Main/Release/badge.svg)
 
-**Online Boutique** is a cloud-first microservices demo application.  The application is a
-web-based e-commerce app where users can browse items, add them to the cart, and purchase them.
+**Online Boutique** is a **platform-independent** microservices demo application. The application is a web-based e-commerce app where users can browse items, add them to the cart, and purchase them.
 
-This version demonstrates modern microservices architecture with **open-source observability** using [Jaeger](https://www.jaegertracing.io/) for distributed tracing, [gRPC](https://grpc.io/) for inter-service communication, and containerized deployment with Docker Compose. Perfect for learning microservices without cloud dependencies!
+This version demonstrates modern microservices architecture with **complete platform independence** - runs on **any cloud** (GCP, AWS, Azure) or **on-premises**. Features [Jaeger](https://www.jaegertracing.io/) for distributed tracing, [gRPC](https://grpc.io/) for inter-service communication, and containerized deployment with Docker Compose.
 
 **🎯 Key Features:**
-- ✅ **Zero Cloud Dependencies**: Runs completely locally with Docker
-- ✅ **Open Source Observability**: Jaeger for distributed tracing  
-- ✅ **11 Microservices**: Written in 5 different programming languages
-- ✅ **Real-world Architecture**: Production-ready patterns and practices
+- 🌐 **Platform Independent**: Deploy on GCP, AWS, Azure, or on-premises
+- 🔍 **Open Source Observability**: Jaeger distributed tracing (no vendor lock-in)
+- 🏗️ **13 Microservices**: Multi-language architecture (Go, Python, Node.js, Java, C#)
+- 🚀 **Production Ready**: Real-world patterns, health checks, and monitoring
+- 🐳 **Container Native**: Docker & Kubernetes ready
+- 📊 **Full Observability**: OpenTelemetry integration with Jaeger UI
 
 If you're using this demo, please **★Star** this repository to show your interest!
 
@@ -76,6 +77,36 @@ Find **Protocol Buffers Descriptions** at the [`./protos` directory](/protos).
    This gives you the full experience with zero configuration!
 
 4. **Alternative: Azure Deployment**
+## 🌐 Platform Independence
+
+**Online Boutique is now completely platform-independent!** Deploy anywhere:
+
+### Supported Platforms:
+- **☁️ Google Cloud Platform** - GKE, Cloud Run, Compute Engine
+- **☁️ Amazon Web Services** - EKS, ECS, EC2
+- **☁️ Microsoft Azure** - AKS, Container Instances, Virtual Machines  
+- **🏢 On-Premises** - Kubernetes, Docker Swarm, bare metal
+- **💻 Local Development** - Docker Compose
+
+### Quick Platform Deployment:
+
+#### Any Cloud with Kubernetes:
+```bash
+kubectl apply -f kubernetes-manifests/
+```
+
+#### Docker Compose (Universal):
+```bash
+docker-compose up -d
+```
+
+#### Helm Chart (Any Kubernetes):
+```bash
+helm install online-boutique ./helm-chart
+```
+
+See the **[Platform-Independent Guide](./PLATFORM-INDEPENDENT-GUIDE.md)** for detailed deployment instructions.
+
    Follow the [Azure Deployment Guide](./AZURE-DEPLOYMENT.md) for cloud deployment with Azure Application Insights.
 
 5. **Manual Docker Compose** (if you prefer):
@@ -83,48 +114,73 @@ Find **Protocol Buffers Descriptions** at the [`./protos` directory](/protos).
    docker-compose up --build
    ```
 
-## Quickstart (Original GKE)
+## Platform-Independent Kubernetes Deployment
+
+> 💡 **Recommended**: This application is now platform-independent and can be deployed on any Kubernetes cluster (GCP GKE, AWS EKS, Azure AKS, or on-premises).
+
+1. Ensure you have the following requirements:
+   - A Kubernetes cluster on your preferred platform
+   - `kubectl` configured to connect to your cluster
+   - `git` for cloning the repository
+
+2. Clone the repository:
+
+   ```sh
+   git clone https://github.com/your-org/microservices-demo.git
+   cd microservices-demo/
+   ```
+
+3. Deploy Online Boutique to your cluster:
+
+   ```sh
+   kubectl apply -f ./kubernetes-manifests
+   ```
+
+4. Wait for the pods to be ready:
+
+   ```sh
+   kubectl get pods
+   ```
+
+5. Access the web frontend in a browser using the frontend's external IP:
+
+   ```sh
+   kubectl get service frontend-external | awk '{print $4}'
+   ```
+
+   **Note**: If using a local cluster (minikube, kind), you may need to use port-forwarding:
+   ```sh
+   kubectl port-forward deployment/frontend 8080:8080
+   ```
+   Then visit http://localhost:8080
+
+6. **[Optional]** Clean up:
+
+   ```sh
+   kubectl delete -f ./kubernetes-manifests
+   ```
+
+## Original GKE Quickstart (Legacy)
+
+> ⚠️ **Note**: The instructions below are for the original GCP-specific version. For platform independence, use the deployment guide above.
+
+<details>
+<summary>Click to expand GKE-specific instructions</summary>
 
 1. Ensure you have the following requirements:
    - [Google Cloud project](https://cloud.google.com/resource-manager/docs/creating-managing-projects#creating_a_project).
    - Shell environment with `gcloud`, `git`, and `kubectl`.
 
-2. Clone the latest major version.
-
-   ```sh
-   git clone --depth 1 --branch v0 https://github.com/GoogleCloudPlatform/microservices-demo.git
-   cd microservices-demo/
-   ```
-
-   The `--depth 1` argument skips downloading git history.
-
-3. Set the Google Cloud project and region and ensure the Google Kubernetes Engine API is enabled.
+2. Set the Google Cloud project and region and ensure the Google Kubernetes Engine API is enabled.
 
    ```sh
    export PROJECT_ID=<PROJECT_ID>
    export REGION=us-central1
    gcloud services enable container.googleapis.com \
-     --project=${PROJECT_ID}
-   ```
-
-   Substitute `<PROJECT_ID>` with the ID of your Google Cloud project.
-
-4. Create a GKE cluster and get the credentials for it.
-
-   ```sh
-   gcloud container clusters create-auto online-boutique \
-     --project=${PROJECT_ID} --region=${REGION}
-   ```
-
-   Creating the cluster may take a few minutes.
-
-5. Deploy Online Boutique to the cluster.
-
-   ```sh
    kubectl apply -f ./release/kubernetes-manifests.yaml
    ```
 
-6. Wait for the pods to be ready.
+5. Wait for the pods to be ready.
 
    ```sh
    kubectl get pods
@@ -156,23 +212,22 @@ Find **Protocol Buffers Descriptions** at the [`./protos` directory](/protos).
 
    Visit `http://EXTERNAL_IP` in a web browser to access your instance of Online Boutique.
 
-8. Congrats! You've deployed the default Online Boutique. To deploy a different variation of Online Boutique (e.g., with Google Cloud Operations tracing, Istio, etc.), see [Deploy Online Boutique variations with Kustomize](#deploy-online-boutique-variations-with-kustomize).
+6. Congrats! You've deployed the platform-independent Online Boutique. To deploy with additional features (e.g., observability, service mesh, etc.), see [Deploy Online Boutique variations with Kustomize](#deploy-online-boutique-variations-with-kustomize).
 
-9. Once you are done with it, delete the GKE cluster.
+7. Once you are done with it, clean up the deployment.
 
    ```sh
-   gcloud container clusters delete online-boutique \
-     --project=${PROJECT_ID} --region=${REGION}
+   kubectl delete -f ./release/kubernetes-manifests.yaml
    ```
 
-   Deleting the cluster may take a few minutes.
+</details>
 
 ## Additional deployment options
 
-- **Terraform**: [See these instructions](/terraform) to learn how to deploy Online Boutique using [Terraform](https://www.terraform.io/intro).
-- **Istio / Cloud Service Mesh**: [See these instructions](/kustomize/components/service-mesh-istio/README.md) to deploy Online Boutique alongside an Istio-backed service mesh.
-- **Non-GKE clusters (Minikube, Kind, etc)**: See the [Development guide](/docs/development-guide.md) to learn how you can deploy Online Boutique on non-GKE clusters.
-- **AI assistant using Gemini**: [See these instructions](/kustomize/components/shopping-assistant/README.md) to deploy a Gemini-powered AI assistant that suggests products to purchase based on an image.
+- **Terraform**: [See these instructions](/terraform) to learn how to deploy Online Boutique using [Terraform](https://www.terraform.io/intro) on any cloud platform.
+- **Istio / Service Mesh**: [See these instructions](/kustomize/components/service-mesh-istio/README.md) to deploy Online Boutique alongside an Istio-backed service mesh (platform-independent).
+- **Local clusters (Minikube, Kind, etc)**: See the [Development guide](/docs/development-guide.md) to learn how you can deploy Online Boutique on local clusters.
+- **AI assistant**: [See these instructions](/kustomize/components/shopping-assistant/README.md) to deploy an AI-powered assistant that suggests products to purchase based on an image.
 - **And more**: The [`/kustomize` directory](/kustomize) contains instructions for customizing the deployment of Online Boutique with other variations.
 
 ## Documentation
@@ -189,19 +244,10 @@ Find **Protocol Buffers Descriptions** at the [`./protos` directory](/protos).
 - [Use Google Cloud Memorystore (Redis) with the Online Boutique sample on GKE](https://medium.com/p/82f7879a900d)
 - [Use Helm to simplify the deployment of Online Boutique, with a Service Mesh, GitOps, and more!](https://medium.com/p/246119e46d53)
 - [How to reduce microservices complexity with Apigee and Anthos Service Mesh](https://cloud.google.com/blog/products/application-modernization/api-management-and-service-mesh-go-together)
+- [Platform Engineering in action: Deploy the Online Boutique sample apps with Score and Humanitec](https://medium.com/p/d99101001e69)
+- [The new Kubernetes Gateway API with Istio and Anthos Service Mesh (ASM)](https://medium.com/p/9d64c7009cd)
+- [Use Azure Redis Cache with the Online Boutique sample on AKS](https://medium.com/p/981bd98b53f8)
+- [Sail Sharp, 8 tips to optimize and secure your .NET containers for Kubernetes](https://medium.com/p/c68ba253844a)
+- [Use Helm to simplify the deployment of Online Boutique, with a Service Mesh, GitOps, and more!](https://medium.com/p/246119e46d53)
 - [gRPC health probes with Kubernetes 1.24+](https://medium.com/p/b5bd26253a4c)
-- [Use Google Cloud Spanner with the Online Boutique sample](https://medium.com/p/f7248e077339)
-- [Seamlessly encrypt traffic from any apps in your Mesh to Memorystore (redis)](https://medium.com/google-cloud/64b71969318d)
-- [Strengthen your app's security with Cloud Service Mesh and Anthos Config Management](https://cloud.google.com/service-mesh/docs/strengthen-app-security)
-- [From edge to mesh: Exposing service mesh applications through GKE Ingress](https://cloud.google.com/architecture/exposing-service-mesh-apps-through-gke-ingress)
-- [Take the first step toward SRE with Cloud Operations Sandbox](https://cloud.google.com/blog/products/operations/on-the-road-to-sre-with-cloud-operations-sandbox)
-- [Deploying the Online Boutique sample application on Cloud Service Mesh](https://cloud.google.com/service-mesh/docs/onlineboutique-install-kpt)
-- [Anthos Service Mesh Workshop: Lab Guide](https://codelabs.developers.google.com/codelabs/anthos-service-mesh-workshop)
 - [KubeCon EU 2019 - Reinventing Networking: A Deep Dive into Istio's Multicluster Gateways - Steve Dake, Independent](https://youtu.be/-t2BfT59zJA?t=982)
-- Google Cloud Next'18 SF
-  - [Day 1 Keynote](https://youtu.be/vJ9OaAqfxo4?t=2416) showing GKE On-Prem
-  - [Day 3 Keynote](https://youtu.be/JQPOPV_VH5w?t=815) showing Stackdriver
-    APM (Tracing, Code Search, Profiler, Google Cloud Build)
-  - [Introduction to Service Management with Istio](https://www.youtube.com/watch?v=wCJrdKdD6UM&feature=youtu.be&t=586)
-- [Google Cloud Next'18 London – Keynote](https://youtu.be/nIq2pkNcfEI?t=3071)
-  showing Stackdriver Incident Response Management

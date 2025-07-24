@@ -82,10 +82,11 @@ spec:
             value: "adservice:9555"
           - name: SHOPPING_ASSISTANT_SERVICE_ADDR
             value: "shoppingassistantservice:80"
-          # # ENV_PLATFORM: One of: local, gcp, aws, azure, onprem, alibaba
-          # # When not set, defaults to "local" unless running in GKE, otherwies auto-sets to gcp
+          # Platform-independent environment configuration
+          # ENV_PLATFORM: One of: local, aws, azure, onprem, alibaba
+          # When not set, defaults to "local" for platform-independent deployment
           # - name: ENV_PLATFORM
-          #   value: "aws"
+          #   value: "local"
           - name: ENABLE_PROFILER
             value: "0"
           # - name: CYMBAL_BRANDING
@@ -94,9 +95,9 @@ spec:
           #   value: "true"
           # - name: FRONTEND_MESSAGE
           #   value: "Replace this with a message you want to display on all pages."
-          # As part of an optional Google Cloud demo, you can run an optional microservice called the "packaging service".
+          # Platform-independent: No external packaging service dependencies
           # - name: PACKAGING_SERVICE_URL
-          #   value: "" # This value would look like "http://123.123.123"
+          #   value: "" # Optional packaging service URL if needed
           resources:
             requests:
               cpu: 100m

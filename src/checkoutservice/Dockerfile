@@ -17,11 +17,14 @@ ARG TARGETOS
 ARG TARGETARCH
 WORKDIR /src
 
-# restore dependencies
-COPY go.mod go.sum ./
-RUN go mod download
+# Install git for go mod download
+RUN apk add --no-cache git
 
+# restore dependencies
+COPY go.mod ./
+RUN go mod download
 COPY . .
+RUN go mod tidy
 
 # Skaffold passes in debug-oriented compiler flags
 ARG SKAFFOLD_GO_GCFLAGS

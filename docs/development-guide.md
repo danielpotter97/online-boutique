@@ -5,70 +5,92 @@ This doc explains how to build and run the Online Boutique source code locally u
 ## Prerequisites
 
 - [Docker for Desktop](https://www.docker.com/products/docker-desktop)
-- [kubectl](https://kubernetes.io/docs/tasks/tools/) (can be installed via `gcloud components install kubectl` for Option 1 - GKE)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/) 
 - [skaffold **2.0.2+**](https://skaffold.dev/docs/install/) (latest version recommended), a tool that builds and deploys Docker images in bulk. 
 - Clone the repository.
     ```sh
-    git clone https://github.com/GoogleCloudPlatform/microservices-demo
+    git clone https://github.com/your-org/microservices-demo
     cd microservices-demo/
     ```
-- A Google Cloud project with Google Container Registry enabled. (for Option 1 - GKE)
-- [Minikube](https://minikube.sigs.k8s.io/docs/start/) (optional for Option 2 - Local Cluster)
-- [Kind](https://kind.sigs.k8s.io/) (optional for Option 2 - Local Cluster)
+- A Kubernetes cluster (cloud-based or local)
+- [Minikube](https://minikube.sigs.k8s.io/docs/start/) (optional for local cluster)
+- [Kind](https://kind.sigs.k8s.io/) (optional for local cluster)
 
-## Option 1: Google Kubernetes Engine (GKE)
+## Option 1: Cloud Kubernetes (Multi-Platform)
 
-> 💡 Recommended if you're using Google Cloud and want to try it on
-> a realistic cluster. **Note**: If your cluster has Workload Identity enabled, 
-> [see these instructions](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity#enable)
+> 💡 Recommended if you're using any cloud provider (GCP, AWS, Azure) and want to try it on
+> a realistic cluster. **Note**: Configure your cloud provider's container registry accordingly.
 
-1.  Create a Google Kubernetes Engine cluster and make sure `kubectl` is pointing
+1.  Create a Kubernetes cluster on your preferred cloud platform and make sure `kubectl` is pointing
     to the cluster.
 
     ```sh
+    # For GCP (if using Google Cloud)
     gcloud services enable container.googleapis.com
+    
+    # For AWS (if using Amazon EKS)
+    # aws eks update-kubeconfig --region region-code --name cluster_name
+    
+    # For Azure (if using Azure AKS) 
+    # az aks get-credentials --resource-group myResourceGroup --name myAKSCluster
     ```
 
     ```sh
+    # Example for GCP (replace with your cloud provider's commands)
     gcloud container clusters create-auto demo --region=us-central1
+    
+    # For AWS EKS:
+    # eksctl create cluster --name demo --region us-west-2
+    
+    # For Azure AKS:
+    # az aks create --resource-group myResourceGroup --name demo --node-count 3
     ```
 
     ```
     kubectl get nodes
     ```
 
-2.  Enable Artifact Registry (AR) on your GCP project and configure the
-    `docker` CLI to authenticate to AR:
+2.  Enable container registry on your cloud platform and configure the
+    `docker` CLI to authenticate:
 
     ```sh
+    # For GCP Artifact Registry:
     gcloud services enable artifactregistry.googleapis.com
-    ```
-
-    ```sh
     gcloud artifacts repositories create microservices-demo \
       --repository-format=docker \
       --location=us \
+    gcloud auth configure-docker -q
+    
+    # For AWS ECR:
+    # aws ecr create-repository --repository-name microservices-demo
+    # aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin ACCOUNT.dkr.ecr.us-west-2.amazonaws.com
+    
+    # For Azure ACR:
+    # az acr create --resource-group myResourceGroup --name myregistry --sku Basic
+    # az acr login --name myregistry
     ```
+
+3.  In the root of this repository, run `skaffold run --default-repo=YOUR_REGISTRY`,
+    where YOUR_REGISTRY is your container registry URL:
 
     ```sh
-    gcloud auth configure-docker -q 
+    # For GCP: --default-repo=us-docker.pkg.dev/[PROJECT_ID]/microservices-demo
+    # For AWS: --default-repo=[ACCOUNT].dkr.ecr.us-west-2.amazonaws.com/microservices-demo  
+    # For Azure: --default-repo=myregistry.azurecr.io/microservices-demo
     ```
-
-3.  In the root of this repository, run `skaffold run --default-repo=us-docker.pkg.dev/[PROJECT_ID]/microservices-demo`,
-    where [PROJECT_ID] is your GCP project ID.
 
     This command:
 
     - builds the container images
-    - pushes them to AR
+    - pushes them to your container registry
     - applies the `./kubernetes-manifests` deploying the application to
       Kubernetes.
 
-    **Troubleshooting:** If you get "No space left on device" error on Google
-    Cloud Shell, you can build the images on Google Cloud Build: [Enable the
-    Cloud Build
-    API](https://console.cloud.google.com/flows/enableapi?apiid=cloudbuild.googleapis.com),
-    then run `skaffold run -p gcb --default-repo=us-docker.pkg.dev/[PROJECT_ID]/microservices-demo` instead.
+    **Troubleshooting:** If you get "No space left on device" error, you can build the images using cloud build services:
+    
+    - **GCP**: [Enable the Cloud Build API](https://console.cloud.google.com/flows/enableapi?apiid=cloudbuild.googleapis.com), then run `skaffold run -p gcb --default-repo=us-docker.pkg.dev/[PROJECT_ID]/microservices-demo`
+    - **AWS**: Use CodeBuild for large image builds
+    - **Azure**: Use Azure Container Registry Build tasks for efficient building
 
 4.  Find the IP address of your application, then visit the application on your
     browser to confirm installation.
