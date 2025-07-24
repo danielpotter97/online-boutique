@@ -22,8 +22,7 @@ import time
 import grpc
 import traceback
 from jinja2 import Environment, FileSystemLoader, select_autoescape, TemplateError
-from google.api_core.exceptions import GoogleAPICallError
-from google.auth.exceptions import DefaultCredentialsError
+# Platform-independent: Removed Google API dependencies
 
 import demo_pb2
 import demo_pb2_grpc
@@ -94,9 +93,9 @@ class EmailService(BaseEmailService):
 
     try:
       EmailService.send_email(self.client, email, confirmation)
-    except GoogleAPICallError as err:
+    except Exception as err:
       context.set_details("An error occurred when sending the email.")
-      print(err.message)
+      print(str(err))
       context.set_code(grpc.StatusCode.INTERNAL)
       return demo_pb2.Empty()
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-require('@google-cloud/trace-agent').start();
+// Platform-independent: Removed Google Cloud trace agent dependency
 
 const path = require('path');
 const grpc = require('grpc');

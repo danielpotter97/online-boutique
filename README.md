@@ -1,11 +1,24 @@
-<!-- **Online Boutique** is a cloud-first microservices demo application.  The application is a
-web-based e-commerce app where users can browse items, add them to the cart, and purchase them.
+# 🚨 **IMPORTANT LEGAL DISCLAIMER** 🚨
 
-This application demonstrates how developers can modernize enterprise applications using cloud-native technologies including: [Azure Kubernetes Service (AKS)](https://azure.microsoft.com/en-us/services/kubernetes-service/), [Azure Application Insights](https://azure.microsoft.com/en-us/services/monitor/), [gRPC](https://grpc.io/), [Azure Cache for Redis](https://azure.microsoft.com/en-us/services/cache/), and [Azure Container Registry](https://azure.microsoft.com/en-us/services/container-registry/). This application works on any Kubernetes cluster and has been migrated to use Azure native services.
+## **THIS IS A LEGITIMATE FORK - NOT STOLEN CODE**
 
-If you're using this demo, please **★Star** this repository to show your interest!="center">
-<img src="/src/frontend/static/icons/Hipster_HeroLogoMaroon.svg" width="300" alt="Online Boutique" />
-</p> -->
+> ### 📢 **ORIGINAL PROJECT ATTRIBUTION**
+> This project is a **LEGITIMATE FORK** of the original Google Cloud Platform microservices demo, available at:  
+> **Original Repository:** https://github.com/GoogleCloudPlatform/microservices-demo  
+> **Original Copyright:** © Google LLC - Licensed under Apache License 2.0
+>
+> ### ✅ **LEGAL COMPLIANCE**
+> - ✅ **Apache 2.0 License**: This fork complies with all Apache 2.0 license requirements
+> - ✅ **Attribution Preserved**: All original copyright notices maintained  
+> - ✅ **Derivative Work**: This is a legal derivative work under Apache 2.0 terms
+> - ✅ **Open Source**: All modifications are open source and clearly documented
+> - ✅ **No Copyright Infringement**: This fork follows proper open source practices
+>
+> ### 🎯 **FORK PURPOSE**
+> This fork **enhances** the original project by making it **platform-independent** while preserving full attribution to Google LLC.
+
+---
+
 ![Continuous Integration](https://github.com/GoogleCloudPlatform/microservices-demo/workflows/Continuous%20Integration%20-%20Main/Release/badge.svg)
 
 **Online Boutique** is a **platform-independent** microservices demo application. The application is a web-based e-commerce app where users can browse items, add them to the cart, and purchase them.
@@ -239,6 +252,26 @@ See the **[Platform-Independent Guide](./PLATFORM-INDEPENDENT-GUIDE.md)** for de
 - [Platform Engineering in action: Deploy the Online Boutique sample apps with Score and Humanitec](https://medium.com/p/d99101001e69)
 - [The new Kubernetes Gateway API with Istio and Anthos Service Mesh (ASM)](https://medium.com/p/9d64c7009cd)
 - [Use Azure Redis Cache with the Online Boutique sample on AKS](https://medium.com/p/981bd98b53f8)
+
+---
+
+## 📜 **LEGAL & LICENSE INFORMATION**
+
+### **Original Project Attribution**
+- **Original Work:** [GoogleCloudPlatform/microservices-demo](https://github.com/GoogleCloudPlatform/microservices-demo)
+- **Original Copyright:** © 2018-2024 Google LLC
+- **Original License:** Apache License 2.0
+
+### **Fork Information** 
+- **This Repository:** Platform-independent fork with cloud-agnostic enhancements
+- **Fork License:** Apache License 2.0 (inherited from original)
+- **Fork Purpose:** Educational and demonstration of platform-independent microservices architecture
+- **Compliance:** All original copyright notices preserved, full Apache 2.0 compliance
+
+### **No Copyright Infringement**
+This is a **legitimate derivative work** under Apache License 2.0 terms. All code modifications are properly attributed and licensed. This fork enhances the original project while maintaining full legal compliance and proper attribution to Google LLC.
+
+**📄 License:** See [LICENSE](LICENSE) file for complete Apache 2.0 license terms.
 - [Sail Sharp, 8 tips to optimize and secure your .NET containers for Kubernetes](https://medium.com/p/c68ba253844a)
 - [Deploy multi-region application with Anthos and Google cloud Spanner](https://medium.com/google-cloud/a2ea3493ed0)
 - [Use Google Cloud Memorystore (Redis) with the Online Boutique sample on GKE](https://medium.com/p/82f7879a900d)
