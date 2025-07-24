@@ -1,19 +1,3 @@
-/*
- * Copyright 2018 Google LLC.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 const pino = require('pino');
 const logger = pino({
   name: 'currencyservice-server',
@@ -32,8 +16,6 @@ else {
   logger.info("Platform-independent profiling disabled by default.")
 }
 
-// Register GRPC OTel Instrumentation for trace propagation
-// regardless of whether tracing is emitted.
 const { GrpcInstrumentation } = require('@opentelemetry/instrumentation-grpc');
 const { registerInstrumentations } = require('@opentelemetry/instrumentation');
 
@@ -131,7 +113,6 @@ function convert (call, callback) {
     _getCurrencyData((data) => {
       const request = call.request;
 
-      // Convert: from_currency --> EUR
       const from = request.from;
       const euros = _carry({
         units: from.units / data[from.currency_code],
@@ -140,7 +121,6 @@ function convert (call, callback) {
 
       euros.nanos = Math.round(euros.nanos);
 
-      // Convert: EUR --> to_currency
       const result = _carry({
         units: euros.units * data[request.to_code],
         nanos: euros.nanos * data[request.to_code]

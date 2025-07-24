@@ -2,7 +2,6 @@ FROM python:3.12.8-slim
 
 WORKDIR /email_server
 
-# System build deps for some wheels (only needed if something needs compiling)
 RUN apt-get update \
     && apt-get install -y --no-install-recommends gcc g++ \
     && rm -rf /var/lib/apt/lists/*

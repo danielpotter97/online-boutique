@@ -1,18 +1,4 @@
 #!/usr/bin/python
-#
-# Copyright 2018 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 from concurrent import futures
 import argparse
@@ -22,7 +8,6 @@ import time
 import grpc
 import traceback
 from jinja2 import Environment, FileSystemLoader, select_autoescape, TemplateError
-# Platform-independent: Removed Google API dependencies
 
 import demo_pb2
 import demo_pb2_grpc
@@ -37,8 +22,6 @@ from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExport
 
 from logger import getJSONLogger
 logger = getJSONLogger('emailservice-server')
-
-# Loads confirmation email template from file
 env = Environment(
     loader=FileSystemLoader('templates'),
     autoescape=select_autoescape(['html', 'xml'])
@@ -151,23 +134,19 @@ def initJaegerTracing():
       from opentelemetry.sdk.resources import Resource
       from opentelemetry.semconv.resource import ResourceAttributes
       
-      # Create a resource with service information
       resource = Resource.create({
         ResourceAttributes.SERVICE_NAME: "emailservice",
         ResourceAttributes.SERVICE_VERSION: "1.0.0",
       })
       
-      # Set up the tracer provider
       trace.set_tracer_provider(TracerProvider(resource=resource))
       tracer = trace.get_tracer(__name__)
       
-      # Create Jaeger exporter
       jaeger_exporter = JaegerExporter(
         agent_host_name="jaeger",
         agent_port=6831,
       )
       
-      # Create a BatchSpanProcessor and add the exporter to it
       span_processor = BatchSpanProcessor(jaeger_exporter)
       trace.get_tracer_provider().add_span_processor(span_processor)
       
@@ -182,13 +161,11 @@ def initJaegerTracing():
 if __name__ == '__main__':
   logger.info('starting the email service in dummy mode.')
 
-    # Platform-independent profiling
   if "DISABLE_PROFILER" not in os.environ:
     logger.info("Platform-independent profiling disabled by default.")
   else:
     logger.info("Profiling disabled.")
 
-  # Tracing
   try:
     if os.environ["ENABLE_TRACING"] == "1":
       otel_endpoint = os.getenv("COLLECTOR_SERVICE_ADDR", "localhost:4317")
