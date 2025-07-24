@@ -11,11 +11,15 @@ If you're using this demo, please **★Star** this repository to show your inter
 **Online Boutique** is a cloud-first microservices demo application.  The application is a
 web-based e-commerce app where users can browse items, add them to the cart, and purchase them.
 
-Google uses this application to demonstrate how developers can modernize enterprise applications using Google Cloud products, including: [Google Kubernetes Engine (GKE)](https://cloud.google.com/kubernetes-engine), [Cloud Service Mesh (CSM)](https://cloud.google.com/service-mesh), [gRPC](https://grpc.io/), [Cloud Operations](https://cloud.google.com/products/operations), [Spanner](https://cloud.google.com/spanner), [Memorystore](https://cloud.google.com/memorystore), [AlloyDB](https://cloud.google.com/alloydb), and [Gemini](https://ai.google.dev/). This application works on any Kubernetes cluster.
+This version demonstrates modern microservices architecture with **open-source observability** using [Jaeger](https://www.jaegertracing.io/) for distributed tracing, [gRPC](https://grpc.io/) for inter-service communication, and containerized deployment with Docker Compose. Perfect for learning microservices without cloud dependencies!
 
-If you’re using this demo, please **★Star** this repository to show your interest!
+**🎯 Key Features:**
+- ✅ **Zero Cloud Dependencies**: Runs completely locally with Docker
+- ✅ **Open Source Observability**: Jaeger for distributed tracing  
+- ✅ **11 Microservices**: Written in 5 different programming languages
+- ✅ **Real-world Architecture**: Production-ready patterns and practices
 
-**Note to Googlers:** Please fill out the form at [go/microservices-demo](http://go/microservices-demo).
+If you're using this demo, please **★Star** this repository to show your interest!
 
 ## Architecture
 
@@ -59,19 +63,25 @@ Find **Protocol Buffers Descriptions** at the [`./protos` directory](/protos).
    cd online-boutique/
    ```
 
-3. Follow the [Azure Deployment Guide](./AZURE-DEPLOYMENT.md) for detailed deployment instructions.
-
-4. For quick local development:
+3. **🚀 Quick Start with Open Source Observability (Recommended)**:
    ```sh
-   # Copy environment template and update with your Azure details
-   cp .env.example .env
-   # Edit .env with your Azure Application Insights connection string
-   
-   # Run locally with Docker Compose
-   docker compose up --build
+   # Start with Jaeger distributed tracing (no cloud setup needed!)
+   ./start-local.sh
    ```
+   
+   **Access Points:**
+   - 🛍️ **Online Boutique**: http://localhost:8080
+   - 📊 **Jaeger Tracing UI**: http://localhost:16686
+   
+   This gives you the full experience with zero configuration!
 
-5. Navigate to `http://localhost:8080` to access the web frontend.
+4. **Alternative: Azure Deployment**
+   Follow the [Azure Deployment Guide](./AZURE-DEPLOYMENT.md) for cloud deployment with Azure Application Insights.
+
+5. **Manual Docker Compose** (if you prefer):
+   ```sh
+   docker-compose up --build
+   ```
 
 ## Quickstart (Original GKE)
 

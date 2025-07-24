@@ -1,4 +1,19 @@
 services:
+  # Jaeger - Open Source Distributed Tracing
+  jaeger:
+    image: jaegertracing/all-in-one:1.52
+    container_name: boutique-jaeger
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "14268:14268"  # Jaeger HTTP collector
+      - "14250:14250"  # Jaeger gRPC collector
+      - "6831:6831/udp"  # Jaeger agent
+      - "6832:6832/udp"  # Jaeger agent
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    networks:
+      - boutique-net
+
   redis:
     image: "redis:7"
     container_name: boutique-redis
@@ -14,12 +29,13 @@ services:
       - "8080:8080"
     environment:
       - PORT=8080
-      - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
-      - DISABLE_PROFILER=${DISABLE_PROFILER:-}
-      - ENABLE_TRACING=${ENABLE_TRACING:-0}
+      - COLLECTOR_SERVICE_ADDR=jaeger:14250
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - ENABLE_TRACING=${ENABLE_TRACING:-1}
     networks:
       - boutique-net
     depends_on:
+      - jaeger
       - cartservice
       - productcatalogservice
       - currencyservice
@@ -34,100 +50,124 @@ services:
     build: ./src/adservice
     container_name: boutique-adservice
     environment:
-      - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
-      - DISABLE_PROFILER=${DISABLE_PROFILER:-}
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
     networks:
       - boutique-net
+    depends_on:
+      - jaeger
 
   cartservice:
     build: ./src/cartservice/src
     container_name: boutique-cartservice
     environment:
       - REDIS_ADDR=redis:6379
-      - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
     networks:
       - boutique-net
     depends_on:
       - redis
+      - jaeger
 
   checkoutservice:
     build: ./src/checkoutservice
     container_name: boutique-checkoutservice
     environment:
-      - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
-      - DISABLE_PROFILER=${DISABLE_PROFILER:-}
+      - COLLECTOR_SERVICE_ADDR=jaeger:14250
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
     networks:
       - boutique-net
+    depends_on:
+      - jaeger
 
   currencyservice:
     build: ./src/currencyservice
     container_name: boutique-currencyservice
     environment:
-      - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
-      - DISABLE_PROFILER=${DISABLE_PROFILER:-}
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
     networks:
       - boutique-net
+    depends_on:
+      - jaeger
 
   emailservice:
     build: ./src/emailservice
     container_name: boutique-emailservice
     environment:
-      - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
-      - DISABLE_PROFILER=${DISABLE_PROFILER:-}
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
     networks:
       - boutique-net
+    depends_on:
+      - jaeger
 
   loadgenerator:
     build: ./src/loadgenerator
     container_name: boutique-loadgenerator
     environment:
-      - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
     networks:
       - boutique-net
+    depends_on:
+      - jaeger
 
   paymentservice:
     build: ./src/paymentservice
     container_name: boutique-paymentservice
     environment:
-      - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
-      - DISABLE_PROFILER=${DISABLE_PROFILER:-}
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
     networks:
       - boutique-net
+    depends_on:
+      - jaeger
 
   productcatalogservice:
     build: ./src/productcatalogservice
     container_name: boutique-productcatalogservice
     environment:
-      - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
-      - DISABLE_PROFILER=${DISABLE_PROFILER:-}
+      - COLLECTOR_SERVICE_ADDR=jaeger:14250
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
     networks:
       - boutique-net
+    depends_on:
+      - jaeger
 
   recommendationservice:
     build: ./src/recommendationservice
     container_name: boutique-recommendationservice
     environment:
-      - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
-      - DISABLE_PROFILER=${DISABLE_PROFILER:-}
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
     networks:
       - boutique-net
+    depends_on:
+      - jaeger
 
   shippingservice:
     build: ./src/shippingservice
     container_name: boutique-shippingservice
     environment:
-      - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
-      - DISABLE_PROFILER=${DISABLE_PROFILER:-}
+      - COLLECTOR_SERVICE_ADDR=jaeger:14250
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
     networks:
       - boutique-net
+    depends_on:
+      - jaeger
 
   shoppingassistantservice:
     build: ./src/shoppingassistantservice
     container_name: boutique-shoppingassistantservice
     environment:
-      - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING:-}
+      - JAEGER_ENDPOINT=http://jaeger:14268/api/traces
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14268/api/traces
     networks:
       - boutique-net
+    depends_on:
+      - jaeger
 
 networks:
   boutique-net:

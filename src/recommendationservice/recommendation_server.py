@@ -38,43 +38,51 @@ from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExport
 from logger import getJSONLogger
 logger = getJSONLogger('recommendationservice-server')
 
-def initAzureApplicationInsights():
-  instrumentation_key = None
-  connection_string = None
+def initJaegerTracing():
+  """Initialize OpenTelemetry with Jaeger exporter"""
+  jaeger_endpoint = None
   
   try:
-    connection_string = os.environ["APPLICATIONINSIGHTS_CONNECTION_STRING"]
+    jaeger_endpoint = os.environ.get("JAEGER_ENDPOINT") or os.environ.get("OTEL_EXPORTER_JAEGER_ENDPOINT")
   except KeyError:
-    try:
-      instrumentation_key = os.environ["APPINSIGHTS_INSTRUMENTATIONKEY"]
-    except KeyError:
-      # Neither environment variable is set
-      logger.info("Azure Application Insights not configured")
-      return
+    logger.info("Jaeger tracing not configured")
+    return
 
-  for retry in range(1,4):
+  if jaeger_endpoint:
     try:
-      if connection_string:
-        # Configure Application Insights with connection string
-        tc = TelemetryClient(connection_string)
-        logger.info("Successfully initialized Azure Application Insights with connection string.")
-      elif instrumentation_key:
-        # Configure Application Insights with instrumentation key
-        tc = TelemetryClient(instrumentation_key)
-        logger.info("Successfully initialized Azure Application Insights with instrumentation key.")
+      from opentelemetry import trace
+      from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+      from opentelemetry.sdk.trace import TracerProvider
+      from opentelemetry.sdk.trace.export import BatchSpanProcessor
+      from opentelemetry.sdk.resources import Resource
+      from opentelemetry.semconv.resource import ResourceAttributes
       
-      # Set up logging handler
-      handler = LoggingHandler(connection_string or instrumentation_key)
-      logger.addHandler(handler)
-      return
-    except (BaseException) as exc:
-      logger.info("Unable to start Azure Application Insights agent. " + str(exc))
-      if (retry < 4):
-        logger.info("Sleeping %d seconds to retry Azure Application Insights agent initialization"%(retry*10))
-        time.sleep (1)
-      else:
-        logger.warning("Could not initialize Azure Application Insights after retrying, giving up")
-  return
+      # Create a resource with service information
+      resource = Resource.create({
+        ResourceAttributes.SERVICE_NAME: "recommendationservice",
+        ResourceAttributes.SERVICE_VERSION: "1.0.0",
+      })
+      
+      # Set up the tracer provider
+      trace.set_tracer_provider(TracerProvider(resource=resource))
+      tracer = trace.get_tracer(__name__)
+      
+      # Create Jaeger exporter
+      jaeger_exporter = JaegerExporter(
+        agent_host_name="jaeger",
+        agent_port=6831,
+      )
+      
+      # Create a BatchSpanProcessor and add the exporter to it
+      span_processor = BatchSpanProcessor(jaeger_exporter)
+      trace.get_tracer_provider().add_span_processor(span_processor)
+      
+      logger.info("Successfully initialized OpenTelemetry with Jaeger tracing")
+      return tracer
+    except Exception as exc:
+      logger.warning(f"Could not initialize Jaeger tracing: {exc}")
+  
+  return None
 
 class RecommendationService(demo_pb2_grpc.RecommendationServiceServicer):
     def ListRecommendations(self, request, context):
@@ -112,7 +120,7 @@ if __name__ == "__main__":
         raise KeyError()
       else:
         logger.info("Profiler enabled.")
-        initAzureApplicationInsights()
+        initJaegerTracing()
     except KeyError:
         logger.info("Profiler disabled.")
 

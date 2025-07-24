@@ -30,17 +30,27 @@ if(process.env.DISABLE_PROFILER) {
 }
 else {
   logger.info("Profiler enabled.")
-  const appInsights = require('applicationinsights');
-  if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
-    appInsights.setup(process.env.APPLICATIONINSIGHTS_CONNECTION_STRING)
-      .setAutoDependencyCorrelation(true)
-      .setAutoCollectRequests(true)
-      .setAutoCollectPerformance(true, true)
-      .setAutoCollectExceptions(true)
-      .setAutoCollectDependencies(true)
-      .setAutoCollectConsole(true)
-      .setSendLiveMetrics(true)
-      .start();
+  // Configure OpenTelemetry with Jaeger tracing
+  if (process.env.JAEGER_ENDPOINT || process.env.OTEL_EXPORTER_JAEGER_ENDPOINT) {
+    const { NodeSDK } = require('@opentelemetry/sdk-node');
+    const { JaegerExporter } = require('@opentelemetry/exporter-jaeger');
+    const { Resource } = require('@opentelemetry/resources');
+    const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
+    
+    const jaegerExporter = new JaegerExporter({
+      endpoint: process.env.JAEGER_ENDPOINT || process.env.OTEL_EXPORTER_JAEGER_ENDPOINT,
+    });
+    
+    const sdk = new NodeSDK({
+      resource: new Resource({
+        [SemanticResourceAttributes.SERVICE_NAME]: 'currencyservice',
+        [SemanticResourceAttributes.SERVICE_VERSION]: '1.0.0',
+      }),
+      traceExporter: jaegerExporter,
+    });
+    
+    sdk.start();
+    logger.info('OpenTelemetry with Jaeger tracing initialized successfully');
   }
 }
 

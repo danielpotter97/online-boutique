@@ -1,5 +1,7 @@
-opencensus-ext-azure==1.1.13
-applicationinsights==0.11.10
+opentelemetry-api==1.21.0
+opentelemetry-sdk==1.21.0
+opentelemetry-exporter-jaeger-thrift==1.21.0
+opentelemetry-instrumentation-grpc==0.42b0
 grpcio-health-checking
 jinja2==3.1.6
 python-json-logger==3.3.0
